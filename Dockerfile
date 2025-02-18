@@ -1,20 +1,16 @@
-# image 1
+# Étape de build
 FROM node:18-slim AS build
-RUN groupadd -r myuser && useradd -r -g myuser -m myuser
 WORKDIR /app
-COPY package*.json /app/
-COPY tsconfig.json /app/
-RUN npm install --production
-USER myuser
-COPY ./index.ts /app/
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
 
-# image 2
+# Étape d'exécution (finale)
 FROM node:18-slim
-RUN groupadd -r myuser && useradd -r -g myuser -m myuser
 WORKDIR /app
-COPY --from=index.ts /app/ /app/
-COPY --from=index.ts /app/ /app/
-RUN npm install --production
-USER myuser
+COPY --from=build /app/build ./build
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/package.json ./
 EXPOSE 3000
 CMD ["node", "build/index.js"]

@@ -1,26 +1,15 @@
-import express, { Request, Response } from 'express';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import express from 'express';
+import os from 'os';
 
 const app = express();
+const PORT = 3000;
 
-const port = process.env.PING_LISTEN_PORT || 3000;
-
-app.get('/', (req: Request, res: Response) => {
-  res.send('Bienvenue sur l\'API !');
+app.get('/ping', (req, res) => {
+    const hostname = os.hostname();
+    console.log(`Ping received from: ${hostname}`);
+    res.send(`Pong from ${hostname}`);
 });
 
-app.get('/ping', (req: Request, res: Response) => {
-  res.json({
-    headers: req.headers,
-  });
-});
-
-app.use((req: Request, res: Response) => {
-  res.status(404).send('404 Error, Route not found');
-});
-
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
